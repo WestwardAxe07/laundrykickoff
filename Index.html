@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laundry Kickoff – Score Predictor | Foulkes Electrical</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --fe-navy:   #1a2b4a;
+      --fe-blue:   #003087;
+      --fe-red:    #F1C400;
+      --fe-light:  #f4f6f9;
+      --fe-border: #d6dde8;
+      --fe-muted:  #6b7585;
+      --fe-white:  #ffffff;
+      --fe-success:#2d6a4f;
+      --fe-text:   #1c2333;
+    }
+    body {
+      font-family: 'Open Sans', Arial, sans-serif;
+      background: var(--fe-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+    }
+    /* ── Top bar ── */
+    .site-bar {
+      width: 100%;
+      max-width: 520px;
+      background: var(--fe-blue);
+      border-radius: 10px 10px 0 0;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .site-bar a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    .site-bar img {
+      height: auto;
+      width: 50%;
+      max-width: 100%;
+    }
+    .site-bar .tagline {
+      font-size: 0.8vw;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.03em;
+      text-align: right;
+      line-height: 1.5;
+      max-width: 45%;
+      word-break: keep-all;
+    }
+    /* ── Yellow accent strip ── */
+    .accent-strip {
+      width: 100%;
+      max-width: 520px;
+      height: 4px;
+      background: var(--fe-red);
+    }
+    /* ── Card ── */
+    .card {
+      background: var(--fe-white);
+      width: 100%;
+      max-width: 520px;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      overflow: hidden;
+      animation: fadeUp 0.45s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* ── Card header ── */
+    .card-header {
+      background: var(--fe-blue);
+      padding: 1.8rem 2rem 1.6rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fe-navy);
+      background: var(--fe-red);
+      border-radius: 4px;
+      padding: 0.22rem 0.65rem;
+      margin-bottom: 0.75rem;
+    }
+    .card-header h1 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--fe-white);
+      line-height: 1.25;
+      margin-bottom: 0.4rem;
+    }
+    .card-header p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.65);
+      font-weight: 300;
+      line-height: 1.55;
+    }
+    /* ── Form body ── */
+    .card-body { padding: 1.75rem 2rem 2.25rem; }
+    .form-group {
+      margin-bottom: 1.15rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    .form-group:nth-child(1) { animation-delay: 0.05s; }
+    .form-group:nth-child(2) { animation-delay: 0.10s; }
+    .form-group:nth-child(3) { animation-delay: 0.15s; }
+    label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--fe-navy);
+      margin-bottom: 0.4rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.72rem 0.95rem;
+      border: 1.5px solid var(--fe-border);
+      border-radius: 6px;
+      font-family: 'Open Sans', Arial, sans-serif;
+      font-size: 0.92rem;
+      color: var(--fe-text);
+      background: var(--fe-white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    /* Remove number spinner arrows for cleaner look */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+    input::placeholder { color: #b2bac8; }
+    input:focus {
+      border-color: var(--fe-blue);
+      box-shadow: 0 0 0 3px rgba(0,48,135,0.10);
+    }
+    input.invalid {
+      border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.10);
+    }
+    .hint {
+      font-size: 0.75rem;
+      color: var(--fe-muted);
+      margin-top: 0.3rem;
+    }
+    /* ── Submit button ── */
+    .submit-btn {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 0.85rem;
+      background: var(--fe-red);
+      color: var(--fe-navy);
+      border: none;
+      border-radius: 6px;
+      font-family: 'Open Sans', Arial, sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .submit-btn:hover  { background: #d9af00; }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    /* ── Error message ── */
+    .error-msg {
+      display: none;
+      font-size: 0.8rem;
+      color: #c0392b;
+      margin-top: 0.85rem;
+      text-align: center;
+      background: #fdf0ef;
+      border-radius: 5px;
+      padding: 0.5rem 0.75rem;
+    }
+    /* ── Success state ── */
+    .success-state {
+      display: none;
+      text-align: center;
+      padding: 2.5rem 2rem 3rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    .success-icon {
+      width: 58px; height: 58px;
+      background: #e6f4ec;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.1rem;
+    }
+    .success-icon svg { width: 26px; height: 26px; stroke: var(--fe-success); }
+    .success-state h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--fe-navy);
+      margin-bottom: 0.45rem;
+    }
+    .success-state p {
+      font-size: 0.88rem;
+      color: var(--fe-muted);
+      line-height: 1.6;
+    }
+    .success-state .back-link {
+      display: inline-block;
+      margin-top: 1.4rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--fe-blue);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .success-state .back-link:hover { text-decoration: underline; }
+    /* ── Footer ── */
+    .card-footer {
+      background: var(--fe-light);
+      border-top: 1px solid var(--fe-border);
+      padding: 0.7rem 2rem;
+      font-size: 0.7rem;
+      color: var(--fe-muted);
+      text-align: center;
+    }
+    .card-footer a {
+      color: var(--fe-blue);
+      text-decoration: none;
+    }
+    .card-footer a:hover { text-decoration: underline; }
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.4rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 480px) {
+      .card-header, .card-body, .success-state { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .site-bar { padding: 0.75rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site header bar -->
+  <div class="site-bar">
+    <a href="https://www.foulkeselectrical.co.uk/" target="_blank" rel="noopener">
+      <img
+        src="https://www.foulkeselectrical.co.uk/media/logo/websites/1/Foulkes-Logo_1_.png"
+        alt="Foulkes Electrical Logo"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+      />
+      <span style="display:none; color:#fff; font-size:1.1rem; font-weight:700; letter-spacing:0.02em;">Foulkes Electrical</span>
+    </a>
+  </div>
+
+  <!-- Yellow accent strip -->
+  <div class="accent-strip"></div>
+
+  <!-- Main card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="badge">Laundry Kickoff</div>
+      <h1>Predict the Score &amp; Win a £100 Voucher</h1>
+      <p>Enter your predicted final score below, add your details, and you're in the draw. One entry per person — good luck!</p>
+    </div>
+
+    <div class="card-body" id="form-body">
+
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Jane Smith" autocomplete="name" />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="jane@foulkeselectrical.co.uk" autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="score">Score</label>
+        <input
+          type="number"
+          id="score"
+          placeholder="e.g. 3"
+          min="0"
+          max="999"
+          inputmode="numeric"
+          pattern="[0-9]*"
+        />
+        <div class="hint">Whole numbers only. One entry per person.</div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()">Submit Prediction</button>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <!-- Success state -->
+    <div class="success-state" id="success-state">
+      <div class="success-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      </div>
+      <h2>Prediction Received!</h2>
+      <p>Thanks for entering the Laundry Kickoff draw.<br>We'll be in touch with the winner. Fingers crossed!</p>
+      <a class="back-link" href="https://www.foulkeselectrical.co.uk/" target="_blank" rel="noopener">
+        ← Back to Foulkes Electrical
+      </a>
+    </div>
+
+    <div class="card-footer">
+      © Foulkes Electrical &nbsp;|&nbsp;
+      <a href="https://www.foulkeselectrical.co.uk/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
+      &nbsp;|&nbsp;
+      <a href="https://www.foulkeselectrical.co.uk/terms-conditions" target="_blank" rel="noopener">Terms &amp; Conditions</a>
+    </div>
+  </div>
+
+  <script>
+    // ── PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ──
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbxzCE3f1MZ-Yg4YSY_cF_IkxDsR5_Uz5Kq8oQNNNxyUQHtXIMmAiPReFrvFKWxsxk7YAg/exec";
+
+    function clearInvalid(id) {
+      document.getElementById(id).classList.remove('invalid');
+    }
+
+    function validate() {
+      const name  = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const score = document.getElementById('score').value.trim();
+      const scoreNum = Number(score);
+
+      if (!name) {
+        document.getElementById('name').classList.add('invalid');
+        return "Please enter your full name.";
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('email').classList.add('invalid');
+        return "Please enter a valid email address.";
+      }
+      if (score === '' || isNaN(scoreNum) || !Number.isInteger(scoreNum) || scoreNum < 0) {
+        document.getElementById('score').classList.add('invalid');
+        return "Please enter a valid whole number score (0 or above).";
+      }
+      return null;
+    }
+
+    // Clear red border as user types
+    ['name', 'email', 'score'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => clearInvalid(id));
+    });
+
+    async function submitForm() {
+      const errEl = document.getElementById('error-msg');
+      const btn   = document.getElementById('submit-btn');
+      errEl.style.display = 'none';
+
+      const err = validate();
+      if (err) {
+        errEl.textContent = err;
+        errEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Submitting…';
+
+      const payload = {
+        name:      document.getElementById('name').value.trim(),
+        email:     document.getElementById('email').value.trim(),
+        score:     Number(document.getElementById('score').value.trim()),
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        await fetch(SHEET_URL, {
+          method:  'POST',
+          mode:    'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+        document.getElementById('form-body').style.display = 'none';
+        document.getElementById('success-state').style.display = 'block';
+      } catch (e) {
+        errEl.textContent = "Something went wrong. Please try again.";
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Submit Prediction';
+      }
+    }
+  </script>
+</body>
+</html>
